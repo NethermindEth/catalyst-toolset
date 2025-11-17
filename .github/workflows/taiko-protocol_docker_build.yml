@@ -45,7 +45,18 @@ jobs:
           echo "Checking out version: $VERSION"
           git fetch origin "$VERSION" || git fetch origin
           git checkout "$VERSION"
-          echo "Current commit: $(git rev-parse HEAD)"
+          COMMIT_SHA=$(git rev-parse HEAD)
+          echo "Current commit: $COMMIT_SHA"
+          echo "TAIKO_COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
+
+      - name: Ensure git metadata is accessible
+        run: |
+          # Make the .git directory accessible in the submodule
+          if [ -f taiko-mono/.git ]; then
+            # It's a submodule pointer file, replace with actual git dir
+            rm taiko-mono/.git
+            cp -r .git/modules/taiko-mono taiko-mono/.git
+          fi
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
