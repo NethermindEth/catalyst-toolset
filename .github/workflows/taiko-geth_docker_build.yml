@@ -29,11 +29,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: false
-
-      - name: Initialize taiko-geth submodule
-        run: |
-          git submodule update --init taiko-geth
+          submodules: true
+          fetch-depth: 0
 
       - name: Checkout taiko-geth version
         working-directory: taiko-geth
@@ -51,18 +48,33 @@ jobs:
 
       - name: Ensure git metadata is accessible
         run: |
+          # Debug: Check the structure
+          echo "=== Checking git structure ==="
+          ls -la taiko-geth/.git 2>/dev/null || echo "taiko-geth/.git not found"
+          cat taiko-geth/.git 2>/dev/null || echo "Cannot read taiko-geth/.git"
+          ls -la .git/modules/ 2>/dev/null || echo ".git/modules/ not found"
+          
           # Make the .git directory accessible in the submodule
           if [ -f taiko-geth/.git ]; then
             cd taiko-geth
             # It's a submodule pointer file, get the actual git dir path (relative)
-            GIT_DIR=$(cat .git | sed 's/gitdir: //')
-            echo "Git dir path: $GIT_DIR"
-            rm .git
-            # Copy the actual git directory (GIT_DIR is relative like ../.git/modules/taiko-geth)
-            cp -r "$GIT_DIR" .git
-            echo "Git metadata copied successfully"
-            git status && echo "Git commands working in submodule"
+            GIT_DIR=$(cat .git | sed 's/gitdir: //' | xargs)
+            echo "Git dir path: '$GIT_DIR'"
+            
+            # Check if the source directory exists
+            if [ -d "$GIT_DIR" ]; then
+              rm .git
+              cp -r "$GIT_DIR" .git
+              echo "✅ Git metadata copied successfully"
+              git status && echo "✅ Git commands working in submodule"
+            else
+              echo "⚠️  Warning: $GIT_DIR does not exist"
+              echo "Available directories:"
+              ls -la ../.git/modules/ 2>/dev/null || echo "No modules directory"
+            fi
             cd ..
+          else
+            echo "⚠️  taiko-geth/.git is not a file (might be a directory already)"
           fi
 
       - name: Set up QEMU
