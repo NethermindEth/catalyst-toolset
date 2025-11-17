@@ -46,37 +46,6 @@ jobs:
           echo "Current commit: $COMMIT_SHA"
           echo "TAIKO_COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
 
-      - name: Ensure git metadata is accessible
-        run: |
-          # Make the .git directory accessible in the submodule
-          if [ -f taiko-mono/.git ]; then
-            cd taiko-mono
-            # It's a submodule pointer file, get the actual git dir path (relative)
-            GIT_DIR=$(cat .git | sed 's/gitdir: //' | xargs)
-            echo "Git dir path: '$GIT_DIR'"
-            
-            # Check if the source directory exists
-            if [ -d "$GIT_DIR" ]; then
-              rm .git
-              cp -r "$GIT_DIR" .git
-              
-              # Fix the worktree path in the git config
-              # The original config points to ../../../taiko-mono (relative from .git/modules/taiko-mono)
-              # We need to change it to point to the current directory
-              sed -i 's|worktree = .*|worktree = .|g' .git/config
-              
-              echo "✅ Git metadata copied and configured successfully"
-              git status && echo "✅ Git commands working in submodule"
-            else
-              echo "⚠️  Warning: $GIT_DIR does not exist"
-              echo "Available directories:"
-              ls -la ../.git/modules/ 2>/dev/null || echo "No modules directory"
-            fi
-            cd ..
-          else
-            echo "⚠️  taiko-mono/.git is not a file (might be a directory already)"
-          fi
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -101,8 +70,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           platforms: linux/amd64,linux/arm64
-          context: ./taiko-mono/packages/protocol
-          file: ./taiko-mono/packages/protocol/Dockerfile
+          context: ./taiko-mono
+          file: ./Dockerfile.taiko-protocol
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
