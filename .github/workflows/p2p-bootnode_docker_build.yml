@@ -3,7 +3,7 @@ name: "[Nethermind] Catalyst P2P Bootnode - Docker build and push"
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [main]
     tags:
       - "catalyst-p2p-bootnode-v*"
     paths:
