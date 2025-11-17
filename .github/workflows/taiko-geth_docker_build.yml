@@ -48,12 +48,6 @@ jobs:
 
       - name: Ensure git metadata is accessible
         run: |
-          # Debug: Check the structure
-          echo "=== Checking git structure ==="
-          ls -la taiko-geth/.git 2>/dev/null || echo "taiko-geth/.git not found"
-          cat taiko-geth/.git 2>/dev/null || echo "Cannot read taiko-geth/.git"
-          ls -la .git/modules/ 2>/dev/null || echo ".git/modules/ not found"
-          
           # Make the .git directory accessible in the submodule
           if [ -f taiko-geth/.git ]; then
             cd taiko-geth
@@ -65,7 +59,13 @@ jobs:
             if [ -d "$GIT_DIR" ]; then
               rm .git
               cp -r "$GIT_DIR" .git
-              echo "✅ Git metadata copied successfully"
+              
+              # Fix the worktree path in the git config
+              # The original config points to ../../../taiko-geth (relative from .git/modules/taiko-geth)
+              # We need to change it to point to the current directory
+              sed -i 's|worktree = .*|worktree = .|g' .git/config
+              
+              echo "✅ Git metadata copied and configured successfully"
               git status && echo "✅ Git commands working in submodule"
             else
               echo "⚠️  Warning: $GIT_DIR does not exist"
