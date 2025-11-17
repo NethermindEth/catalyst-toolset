@@ -53,9 +53,16 @@ jobs:
         run: |
           # Make the .git directory accessible in the submodule
           if [ -f taiko-geth/.git ]; then
-            # It's a submodule pointer file, replace with actual git dir
-            rm taiko-geth/.git
-            cp -r .git/modules/taiko-geth taiko-geth/.git
+            cd taiko-geth
+            # It's a submodule pointer file, get the actual git dir path (relative)
+            GIT_DIR=$(cat .git | sed 's/gitdir: //')
+            echo "Git dir path: $GIT_DIR"
+            rm .git
+            # Copy the actual git directory (GIT_DIR is relative like ../.git/modules/taiko-geth)
+            cp -r "$GIT_DIR" .git
+            echo "Git metadata copied successfully"
+            git status && echo "Git commands working in submodule"
+            cd ..
           fi
 
       - name: Set up QEMU
@@ -87,6 +94,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            GIT_VERSION=${{ env.GETH_COMMIT_SHA }}
 
   merge:
     name: Merge and push docker image
