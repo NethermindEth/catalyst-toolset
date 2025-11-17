@@ -6,6 +6,9 @@ WORKDIR /usr/src/build
 # Copy the entire project into the container
 COPY . .
 
+# Set environment variables to handle cross-compilation issues
+ENV RUST_MIN_STACK=16777216
+
 # Build the project in release mode
 RUN cargo build -p p2p-bootnode --release
 
