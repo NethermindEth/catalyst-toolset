@@ -16,7 +16,7 @@ async fn resolve_to_ipv4(addr_str: &str) -> Result<Ipv4Addr> {
     }
 
     // If that fails, try to resolve as domain name
-    let socket_addrs: Vec<SocketAddr> = format!("{}:0", addr_str).to_socket_addrs()?.collect();
+    let socket_addrs: Vec<SocketAddr> = format!("{addr_str}:0").to_socket_addrs()?.collect();
 
     // Find the first IPv4 address
     for addr in socket_addrs {
@@ -26,8 +26,7 @@ async fn resolve_to_ipv4(addr_str: &str) -> Result<Ipv4Addr> {
     }
 
     Err(anyhow::anyhow!(
-        "Could not resolve '{}' to an IPv4 address",
-        addr_str
+        "Could not resolve '{addr_str}' to an IPv4 address"
     ))
 }
 
@@ -57,11 +56,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let address = if let Some(addr_str) = std::env::args().nth(1) {
         match resolve_to_ipv4(&addr_str).await {
             Ok(ip) => {
-                info!("Resolved '{}' to IP address: {}", addr_str, ip);
+                info!("Resolved '{addr_str}' to IP address: {ip}");
                 Some(ip)
             }
             Err(e) => {
-                eprintln!("Failed to resolve address '{}': {}", addr_str, e);
+                eprintln!("Failed to resolve address '{addr_str}': {e}");
                 std::process::exit(1);
             }
         }
