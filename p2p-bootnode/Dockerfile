@@ -1,4 +1,4 @@
-FROM rust:1.90 AS builder
+FROM rust:1.83 AS builder
 
 # Set the working directory inside the container
 WORKDIR /usr/src/build
@@ -6,11 +6,9 @@ WORKDIR /usr/src/build
 # Copy the entire project into the container
 COPY . .
 
-# Set environment variables to handle cross-compilation issues
-ENV RUST_MIN_STACK=16777216
-
-# Build the project in release mode
-RUN cargo build -p p2p-bootnode --release
+# Build the project in release mode with environment variables set inline
+# and reduced parallelism to avoid QEMU emulation issues
+RUN RUST_MIN_STACK=67108864 CARGO_BUILD_JOBS=1 cargo build -p p2p-bootnode --release
 
 # Use debian slim as the base image
 FROM debian:bookworm-slim
