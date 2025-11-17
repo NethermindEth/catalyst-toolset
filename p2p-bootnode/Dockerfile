@@ -3,12 +3,6 @@ FROM rust:1.90 AS builder
 # Set the working directory inside the container
 WORKDIR /usr/src/build
 
-# Copy only the toolchain file first
-COPY rust-toolchain.toml .
-
-# Install the toolchain components
-RUN rustup show
-
 # Copy the entire project into the container
 COPY . .
 

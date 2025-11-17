@@ -273,4 +273,3 @@ Only initialize the submodules you need to reduce clone time and disk usage.
 ---
 
 **Maintained by:** [Nethermind](https://nethermind.io/)
-
