@@ -1,0 +1,11 @@
+[submodule "taiko-geth"]
+	path = taiko-geth
+	url = https://github.com/taikoxyz/taiko-geth.git
+	branch = taiko
+[submodule "web3signer"]
+	path = web3signer
+	url = https://github.com/Consensys/web3signer.git
+	branch = master
+[submodule "taiko-mono"]
+	path = taiko-mono
+	url = https://github.com/taikoxyz/taiko-mono.git
