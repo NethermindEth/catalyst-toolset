@@ -1,20 +1,22 @@
 [package]
 name = "p2p-bootnode"
 publish = false
-version.workspace = true
-edition.workspace = true
-repository.workspace = true
-license.workspace = true
+version = "0.2.0"
+edition = "2024"
+repository = "https://github.com/NethermindEth/catalyst-toolset"
+license = "MIT"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+anyhow = { version = "1", default-features = false }
+discv5 = { version = "0.9.1", default-features = false, features = ["libp2p"] }
+jsonrpsee = { version = "0.25", default-features = false, features = [
+    "http-client",
+    "server",
+] }
+tokio = { version = "1.45", default-features = false, features = ["full"] }
+tracing = { version = "0.1.41", default-features = false }
+tracing-subscriber = { version = "0.3", default-features = false, features = [
+    "fmt",
+    "env-filter",
+] }
 
-[dependencies] 
-anyhow = { workspace = true }
-discv5 = { workspace = true }
-jsonrpsee = { workspace = true }
-tokio = { workspace = true }
-tracing = { workspace = true }
-tracing-subscriber = { workspace = true }
-
-[lints]
-workspace = true
