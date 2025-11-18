@@ -1,43 +1,26 @@
-# Taiko Protocol Dockerfile
-# This builds the protocol smart contracts and related artifacts
+FROM node:24
+WORKDIR /app
 
-FROM node:20-alpine AS builder
+# Copy package.json first for better caching
+COPY ./taiko-mono/packages/protocol/package.json ./
+
+RUN apt-get update && apt-get install -y jq
+
+RUN git init && \
+    curl -L https://foundry.paradigm.xyz | bash && \
+    npm install -g pnpm && \
+    . ~/.bashrc && \
+    foundryup && \
+    forge install
+
+ENV PATH="/root/.foundry/bin:$PATH"
+
+# Copy the rest of the source code (including pnpm-lock.yaml from parent)
+COPY ./taiko-mono/packages/protocol ./
+
+RUN find /app/script -type f -name "*.sh" -exec chmod +x {} \;
 
 # Install dependencies
-RUN apk add --no-cache git python3 make g++
+RUN pnpm install
 
-WORKDIR /build
-
-# Copy git metadata first (needed for versioning)
-COPY .git .git
-
-# Copy package files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-
-# Install pnpm
-RUN npm install -g pnpm
-
-# Copy protocol package
-COPY packages/protocol/ packages/protocol/
-
-# Install dependencies
-RUN pnpm install --frozen-lockfile
-
-WORKDIR /build/packages/protocol
-
-# Build the protocol
-RUN pnpm build
-
-# Final stage - minimal image with built artifacts
-FROM alpine:latest
-
-# Copy built artifacts
-COPY --from=builder /build/packages/protocol/out /protocol/out
-COPY --from=builder /build/packages/protocol/artifacts /protocol/artifacts
-COPY --from=builder /build/packages/protocol/deployments /protocol/deployments
-
-WORKDIR /protocol
-
-# The protocol image can be used to extract artifacts or for deployment scripts
-CMD ["sh"]
-
+CMD ["sh", "-c", "echo Please verify the environment variables and command."]
