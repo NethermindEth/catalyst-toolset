@@ -8,7 +8,7 @@ WORKDIR /build
 COPY go.mod go.sum ./
 
 # Copy taiko-client source
-COPY packages/taiko-client/ packages/taiko-client/
+COPY ./packages/taiko-client/ packages/taiko-client/
 
 RUN git init
 
