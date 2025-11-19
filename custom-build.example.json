@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Example customization configuration. Rename to custom-build.json or customize-{component}.json to activate",
+  "replacements": [
+    {
+      "file": "version/version.go",
+      "search": "gitCommit = \"\"",
+      "replace": "gitCommit = \"custom-build\""
+    },
+    {
+      "file": "params/config.go",
+      "search": "MaxPeers:.*50",
+      "replace": "MaxPeers: 100"
+    }
+  ],
+  "commands": [
+    "echo 'Running custom configuration'",
+    "go mod download || true",
+    "echo 'Custom configuration applied'"
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "description": "Custom build configuration",
+    "author": "Your Name"
+  }
+}
+
