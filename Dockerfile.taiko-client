@@ -1,6 +1,6 @@
 FROM golang:1.24-alpine AS builder
 
-RUN apk update && apk add --no-cache --update gcc musl-dev linux-headers git make build-base
+RUN apk update && apk add --no-cache --update gcc musl-dev linux-headers git make build-base bash jq patch
 
 WORKDIR /build
 
@@ -13,6 +13,19 @@ COPY ./packages/taiko-client/ packages/taiko-client/
 RUN git init
 
 WORKDIR /build/packages/taiko-client
+
+# Copy and run pre-build customization script if it exists
+COPY --chmod=755 pre-build-customize.sh /tmp/pre-build-customize.sh 2>/dev/null || true
+COPY custom*.sh custom*.json custom*.patch customize-client.* /tmp/ 2>/dev/null || true
+
+# Run customization if script exists
+RUN if [ -f /tmp/pre-build-customize.sh ]; then \
+        WORKING_DIR=/build/packages/taiko-client /tmp/pre-build-customize.sh client \
+            ${CUSTOM_SCRIPT:+--script /tmp/$CUSTOM_SCRIPT} \
+            ${CUSTOM_COMMANDS:+--commands "$CUSTOM_COMMANDS"} \
+            ${CUSTOM_CONFIG:+--config /tmp/$CUSTOM_CONFIG} \
+            ${CUSTOM_PATCH:+--patch /tmp/$CUSTOM_PATCH}; \
+    fi
 
 # Build the binary
 RUN make build

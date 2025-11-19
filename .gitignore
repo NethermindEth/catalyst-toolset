@@ -1,0 +1,28 @@
+# Pre-build Customization Files
+# These files are used for local customizations and should not be committed
+
+# Generic customization files
+custom-build.sh
+custom-build.json
+custom-build.patch
+custom-build.env
+
+# Component-specific customization files
+customize-client.sh
+customize-client.json
+customize-client.patch
+customize-geth.sh
+customize-geth.json
+customize-geth.patch
+customize-blobindexer.sh
+customize-blobindexer.json
+customize-blobindexer.patch
+customize-protocol.sh
+customize-protocol.json
+customize-protocol.patch
+
+# Keep example files
+!custom-build.example.sh
+!custom-build.example.json
+!custom-build.example.patch
+
