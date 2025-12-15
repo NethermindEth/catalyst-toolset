@@ -1,0 +1,14 @@
+diff --git a/params/config.go b/params/config.go
+index 1234567..abcdefg 100644
+--- a/params/config.go
++++ b/params/config.go
+@@ -10,7 +10,7 @@ var (
+ 	// Network configuration defaults
+ 	DefaultMaxPeers = 50
+ 	DefaultTimeout  = 30
+-	CustomSetting   = false
++	CustomSetting   = true
+ )
+ 
+ // This is an example patch file
+

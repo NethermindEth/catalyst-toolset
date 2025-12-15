@@ -7,6 +7,18 @@ on:
         description: 'Taiko mono version (branch, tag, or commit)'
         required: false
         default: 'main'
+      custom_commands:
+        description: 'Custom commands to run before build (bash commands)'
+        required: false
+        default: ''
+      custom_script_url:
+        description: 'URL to download custom build script from'
+        required: false
+        default: ''
+      custom_patch_url:
+        description: 'URL to download patch file from'
+        required: false
+        default: ''
 
 env:
   DOCKER_REGISTRY: docker.io
@@ -46,6 +58,19 @@ jobs:
           echo "Current commit: $COMMIT_SHA"
           echo "TAIKO_COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
 
+      - name: Download custom build artifacts
+        if: inputs.custom_script_url != '' || inputs.custom_patch_url != ''
+        run: |
+          if [ -n "${{ inputs.custom_script_url }}" ]; then
+            echo "Downloading custom script from: ${{ inputs.custom_script_url }}"
+            curl -sL "${{ inputs.custom_script_url }}" -o custom-build.sh
+            chmod +x custom-build.sh
+          fi
+          if [ -n "${{ inputs.custom_patch_url }}" ]; then
+            echo "Downloading patch from: ${{ inputs.custom_patch_url }}"
+            curl -sL "${{ inputs.custom_patch_url }}" -o custom-build.patch
+          fi
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -77,6 +102,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             GIT_VERSION=${{ env.TAIKO_COMMIT_SHA }}
+            CUSTOM_COMMANDS=${{ inputs.custom_commands }}
 
   merge:
     name: Merge and push docker image
