@@ -45,6 +45,9 @@ jobs:
           COMMIT_SHA=$(git rev-parse HEAD)
           echo "Current commit: $COMMIT_SHA"
           echo "TAIKO_COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
+          SHORT_SHA=${COMMIT_SHA:0:7}
+          echo "Short sha: $SHORT_SHA"
+          echo "TAIKO_SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -103,7 +106,7 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             type=ref,event=tag
-            type=sha
+            type=raw,value=sha-${{ env.TAIKO_SHORT_SHA }}
 
       - name: Create manifest list and push
         run: |
