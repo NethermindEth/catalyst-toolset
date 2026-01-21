@@ -18,6 +18,8 @@ jobs:
     name: Build and push temporary docker image
     runs-on: ${{ matrix.os }}
     if: github.repository == 'NethermindEth/catalyst-toolset'
+    outputs:
+      taiko_short_sha: ${{ steps.taiko_sha.outputs.short_sha }}
     strategy:
       matrix:
         include:
@@ -33,6 +35,7 @@ jobs:
           fetch-depth: 0
 
       - name: Checkout taiko-mono version
+        id: taiko_sha
         working-directory: taiko-mono
         run: |
           VERSION="${{ inputs.taiko_version }}"
@@ -47,7 +50,7 @@ jobs:
           echo "TAIKO_COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
           SHORT_SHA=${COMMIT_SHA:0:7}
           echo "Short sha: $SHORT_SHA"
-          echo "TAIKO_SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -106,7 +109,7 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             type=ref,event=tag
-            type=raw,value=sha-${{ env.TAIKO_SHORT_SHA }}
+            type=raw,value=sha-${{ needs.build.outputs.taiko_short_sha }}
 
       - name: Create manifest list and push
         run: |
