@@ -9,3 +9,6 @@
 [submodule "taiko-mono"]
 	path = taiko-mono
 	url = https://github.com/taikoxyz/taiko-mono.git
+[submodule "surge-taiko-mono"]
+	path = surge-taiko-mono
+	url = https://github.com/NethermindEth/surge-taiko-mono.git
