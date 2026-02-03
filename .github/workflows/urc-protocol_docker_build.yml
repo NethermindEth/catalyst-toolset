@@ -3,7 +3,7 @@ name: "[Nethermind] Catalyst URC Protocol - Docker build and push"
 on:
   workflow_dispatch:
     inputs:
-      taiko_version:
+      urc_version:
         description: 'URC version (branch, tag, or commit)'
         required: false
         default: 'main'
@@ -32,10 +32,10 @@ jobs:
           submodules: true
           fetch-depth: 0
 
-      - name: Checkout taiko-mono version
-        working-directory: taiko-mono
+      - name: Checkout urc version
+        working-directory: urc
         run: |
-          VERSION="${{ inputs.taiko_version }}"
+          VERSION="${{ inputs.urc_version }}"
           if [ -z "$VERSION" ]; then
             VERSION="main"
           fi
@@ -44,7 +44,7 @@ jobs:
           git checkout "$VERSION"
           COMMIT_SHA=$(git rev-parse HEAD)
           echo "Current commit: $COMMIT_SHA"
-          echo "TAIKO_COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
+          echo "URC_COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -70,13 +70,11 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           platforms: ${{ matrix.platform }}
-          context: ./taiko-mono
-          file: ./Dockerfile.taiko-protocol
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            GIT_VERSION=${{ env.TAIKO_COMMIT_SHA }}
+            GIT_VERSION=${{ env.URC_COMMIT_SHA }}
 
   merge:
     name: Merge and push docker image
