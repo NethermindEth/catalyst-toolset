@@ -12,3 +12,6 @@
 [submodule "surge-taiko-mono"]
 	path = surge-taiko-mono
 	url = https://github.com/NethermindEth/surge-taiko-mono.git
+[submodule "urc"]
+	path = urc
+	url = https://github.com/NethermindEth/urc.git
