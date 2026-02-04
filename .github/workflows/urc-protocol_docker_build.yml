@@ -71,8 +71,8 @@ jobs:
         with:
           platforms: ${{ matrix.platform }}
           push: true
-          context: ./urc
-          file: ./urc/Dockerfile
+          context: .
+          file: ./Dockerfile.urc-protocol
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
