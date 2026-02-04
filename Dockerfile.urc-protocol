@@ -2,8 +2,8 @@ FROM node:22
 
 WORKDIR /app
 
-# Copy urc tree, then replace the submodule .git file with urc’s real git dir
 COPY urc /app/urc
+RUN rm -f /app/urc/.git
 COPY .git/modules/urc /app/urc/.git
 
 WORKDIR /app/urc
