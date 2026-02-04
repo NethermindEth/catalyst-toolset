@@ -5,6 +5,7 @@ WORKDIR /app
 COPY urc /app/urc
 RUN rm -f /app/urc/.git
 COPY .git/modules/urc /app/urc/.git
+RUN sed -i '/worktree = /d' /app/urc/.git/config
 
 WORKDIR /app/urc
 
