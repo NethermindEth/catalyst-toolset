@@ -154,6 +154,18 @@ This allows testing of different component version combinations without modifyin
 
 ## 🛠️ Local Development
 
+### Testing Builds Locally
+
+Use the test script to build any component locally:
+
+```bash
+# Basic usage
+./test-build-local.sh client      # Build Taiko Client
+./test-build-local.sh geth        # Build Taiko Geth
+./test-build-local.sh blobindexer # Build Blobindexer
+./test-build-local.sh protocol    # Build Protocol
+```
+
 ### Building Docker Images Locally
 
 #### Taiko Client
@@ -235,6 +247,56 @@ Images are automatically tagged with:
 - **Default behavior:** Builds use the pinned submodule commits
 - **Manual builds:** Override with any branch, tag, or commit
 - **CI builds:** Can test any version combination without code changes
+
+## 🎨 Pre-Build Customization
+
+You can customize the binary builds before compilation to make simple modifications without forking the repository.
+
+### Quick Start
+
+```bash
+# 1. Copy the example script
+cp custom-build.example.sh custom-build.sh
+
+# 2. Edit your customizations
+nano custom-build.sh
+
+# 3. Build with customizations
+./test-build-local.sh client
+```
+
+### Customization Options
+
+The build system supports multiple customization methods:
+
+- **Custom Scripts** - Run bash scripts before build
+- **Inline Commands** - Execute commands directly
+- **JSON Configuration** - Apply structured customizations
+- **Patch Files** - Apply Git-style patches
+
+### Component-Specific Customizations
+
+Create component-specific files for targeted modifications:
+
+```bash
+customize-client.sh     # Only affects Taiko Client
+customize-geth.sh       # Only affects Taiko Geth
+customize-blobindexer.sh # Only affects Blobindexer
+customize-protocol.sh   # Only affects Protocol
+```
+
+### GitHub Workflow Customization
+
+When running workflows manually, you can provide:
+
+- **custom_commands** - Bash commands to run before build
+- **custom_script_url** - URL to download custom script from
+- **custom_patch_url** - URL to download patch file from
+
+### Documentation
+
+- **[Full Customization Guide](./CUSTOMIZATION.md)** - Comprehensive documentation
+- **[Quick Reference](./CUSTOMIZATION-QUICK-REF.md)** - Common use cases and examples
 
 ## 🤝 Contributing
 
