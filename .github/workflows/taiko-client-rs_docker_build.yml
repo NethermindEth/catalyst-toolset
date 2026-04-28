@@ -76,7 +76,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           platforms: ${{ matrix.platform }}
-          context: ./taiko-mono/packages/taiko-client-rs
+          context: ./taiko-mono/packages
           file: ./Dockerfile.taiko-client-rs
           push: true
           tags: ${{ steps.meta.outputs.tags }}
