@@ -4,7 +4,7 @@ WORKDIR /app
 # Copy package.json first for better caching
 COPY ./packages/protocol/package.json ./
 
-RUN apt-get update && apt-get install -y jq
+RUN apt-get update && apt-get install -y jq bash patch
 
 RUN git init && \
     curl -L https://foundry.paradigm.xyz | bash && \
@@ -19,6 +19,19 @@ ENV PATH="/root/.foundry/bin:$PATH"
 COPY ./packages/protocol ./
 
 RUN find /app/script -type f -name "*.sh" -exec chmod +x {} \;
+
+# Copy and run pre-build customization script if it exists
+COPY --chmod=755 ../../pre-build-customize.sh /tmp/pre-build-customize.sh 2>/dev/null || true
+COPY ../../custom*.sh ../../custom*.json ../../custom*.patch ../../customize-protocol.* /tmp/ 2>/dev/null || true
+
+# Run customization if script exists
+RUN if [ -f /tmp/pre-build-customize.sh ]; then \
+        WORKING_DIR=/app /tmp/pre-build-customize.sh protocol \
+            ${CUSTOM_SCRIPT:+--script /tmp/$CUSTOM_SCRIPT} \
+            ${CUSTOM_COMMANDS:+--commands "$CUSTOM_COMMANDS"} \
+            ${CUSTOM_CONFIG:+--config /tmp/$CUSTOM_CONFIG} \
+            ${CUSTOM_PATCH:+--patch /tmp/$CUSTOM_PATCH}; \
+    fi
 
 # Install dependencies
 RUN pnpm install
